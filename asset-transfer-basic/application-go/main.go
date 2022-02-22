@@ -82,8 +82,8 @@ func main() {
 
 	r.GET("/ReadAsset", func(c *gin.Context) {
 		log.Println("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
-		assetID := c.Query("assetID")
-		result, err := contract.EvaluateTransaction("ReadAsset", assetID)
+		CertNo := c.Query("CertNo")
+		result, err := contract.EvaluateTransaction("ReadAsset", CertNo)
 		if err != nil {
 			log.Println("Failed to evaluate transaction: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
