@@ -13,7 +13,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"database/sql"
+
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/gateway"
 )
@@ -29,11 +32,48 @@ type Asset struct {
 	Remark    string `form:"remark" json:"remark" xml:"remark"  binding:""`
 }
 
+var db *sql.DB
+
+func initDB() (err error) {
+	// DSN:Data Source Name
+	dsn := "tommy:mysql123456@tcp(167.179.77.244:3306)/certificate?charset=utf8mb4&parseTime=True"
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		return err
+	}
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func insertRow(asset Asset) {
+	sqlStr := "insert into certificate(certno, personid, name, brand, numofdose, time, issuer, remark) values (?,?,?,?,?,?,?,?)"
+	ret, err := db.Exec(sqlStr, asset.CertNo, asset.ID, asset.Name, asset.Brand, asset.NumOfDose, asset.Time, asset.Issuer, asset.Remark)
+	if err != nil {
+		fmt.Printf("insert failed, err:%v\n", err)
+		return
+	}
+	theID, err := ret.LastInsertId()
+	if err != nil {
+		fmt.Printf("get lastinsert ID failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+}
+
 func main() {
+
+	err := initDB() //
+	if err != nil {
+		fmt.Printf("init db failed,err:%v\n", err)
+		return
+	}
 
 	log.Println("============ application-golang starts ============")
 
-	err := os.Setenv("DISCOVERY_AS_LOCALHOST", "true")
+	err = os.Setenv("DISCOVERY_AS_LOCALHOST", "true")
 	if err != nil {
 		log.Fatalf("Error setting DISCOVERY_AS_LOCALHOST environemnt variable: %v", err)
 	}
@@ -130,6 +170,9 @@ func main() {
 			return
 		}
 		log.Println(string(result))
+
+		insertRow(json)
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": string(result),
 		})
@@ -181,3 +224,7 @@ func populateWallet(wallet *gateway.Wallet) error {
 
 	return wallet.Put("appUser", identity)
 }
+
+// func getNetworkForOrgUser(userId string) {
+// 	wallet = getWa
+// }

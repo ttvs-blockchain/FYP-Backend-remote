@@ -1,5 +1,5 @@
-# curl -v -X POST http://localhost:8080/CreateAsset   -H 'content-type: application/json' -d '{ "assetID": "123", "color":"red", "owner":"jerry", "size": "3", "appraisedValue":"3"}'
+curl -v -X POST http://localhost:8080/CreateAsset   -H 'content-type: application/json' -d '{ "CertNo": "123", "ID":"IDTEST", "Name":"jerry", "Brand": "TestBrand", "NumOfDose":"3","Time":"2022/02/22", "Issuer":"issuertest", "Remark":"no remark"}'
 
 # curl -v -X GET "http://localhost:8080/ReadAsset?assetID=123"
 
-curl -v -X GET "http://localhost:8080/GetAllAssets"
+# curl -v -X GET "http://localhost:8080/GetAllAssets"
