@@ -74,7 +74,7 @@ func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
 	if err != nil {
 		return err
 	}
-	return ctx.GetStub().PutState(localChainID, assetJSON)
+	return ctx.GetStub().PutState(id, assetJSON)
 }
 
 // ReadAsset returns the asset stored in the world state with given certNo.

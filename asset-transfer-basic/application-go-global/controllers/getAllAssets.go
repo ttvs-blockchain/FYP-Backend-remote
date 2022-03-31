@@ -11,7 +11,7 @@ func GetAllAssets(c *gin.Context) {
 	log.Println("--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
 	result, err := GlobalContract.EvaluateTransaction("GetAllAssets")
 	if err != nil {
-		log.Println("Failed to evaluate transaction: %v", err)
+		log.Printf("Failed to evaluate transaction: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

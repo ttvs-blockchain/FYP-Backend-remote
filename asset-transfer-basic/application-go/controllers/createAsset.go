@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"asset-transfer-basic/models"
+	"asset-transfer-basic/utils"
 	"log"
 	"net/http"
 
@@ -29,8 +30,18 @@ func CreateAsset(c *gin.Context) {
 	log.Printf("--> Submit Transaction: CreateAsset, finish creates new asset with %v, \n", string(result))
 
 	// TODO let local chain have hashed done
-	var info = models.LocalChainInfo{"testid", "testhash", "testblknum", "testtimestamp"}
-	models.InsertRow(asset, info)
+	var info = models.LocalChainInfo{
+		"testid",
+		"testhash",
+		1,
+		utils.GetUnixTime()}
+	err = models.InsertCert(asset, info)
+
+	if err != nil {
+		log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": string(result),

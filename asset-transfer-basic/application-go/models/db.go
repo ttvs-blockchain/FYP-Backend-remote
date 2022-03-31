@@ -21,17 +21,56 @@ func InitDB() (err error) {
 	return nil
 }
 
-func InsertRow(asset Asset, info LocalChainInfo) {
-	sqlStr := INSERT_SQL
-	ret, err := MyDatabase.Exec(sqlStr, asset.CertNo, asset.ID, asset.Name, asset.Brand, asset.NumOfDose, asset.Time, asset.Issuer, asset.Remark, info.LocalChainID, info.LocalChainTxHash, info.LocalChainBlockNum, info.LocalChainTimeStamp)
+func InsertCert(asset Asset, info LocalChainInfo) (err error) {
+	sqlStr := INSERT_CERT_SQL
+	ret, err := MyDatabase.Exec(sqlStr,
+		asset.CertNo,
+		asset.ID,
+		asset.Name,
+		asset.Brand,
+		asset.NumOfDose,
+		asset.Time,
+		asset.Issuer,
+		asset.Remark,
+		info.LocalChainID,
+		info.LocalChainTxHash,
+		info.LocalChainBlockNum,
+		info.LocalChainTimeStamp)
 	if err != nil {
-		fmt.Printf("insert failed, err:%v\n", err)
-		return
+		return err
 	}
 	theID, err := ret.LastInsertId()
 	if err != nil {
-		fmt.Printf("get lastinsert ID failed, err:%v\n", err)
-		return
+		return err
 	}
 	fmt.Printf("insert success, the id is %d.\n", theID)
+	return nil
+}
+
+func InsertGlobalHash(info GlocalChainInfo) (err error) {
+	sqlStr := INSERT_GLOBAL_HASH_SQL
+	ret, err := MyDatabase.Exec(sqlStr,
+		info.CertIDList,
+		info.GlobalChainTxHash,
+		info.GlobalChainBlockNum,
+		info.GlobalChainTimeStamp)
+	if err != nil {
+		return err
+	}
+	theID, err := ret.LastInsertId()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+	return nil
+}
+
+func UpdateRow(info LocalChainInfo, id string) (err error) {
+	sqlStr := UPDATE_SQL
+	ret, err := MyDatabase.Exec(sqlStr, info.LocalChainID, info.LocalChainTxHash, info.LocalChainBlockNum, info.LocalChainTimeStamp, id)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("insert success, ", ret)
+	return nil
 }

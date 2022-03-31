@@ -10,9 +10,9 @@ CREATE TABLE `localCertificate` (
     `remark` VARCHAR(255) DEFAULT '',
 
     `localChainID` VARCHAR(255) DEFAULT '',
-    `localChainTxHash`VARCHAR(255) DEFAULT '',
+    `localChainTxHash` TEXT,
     `localChainBlockNum` int DEFAULT 0,
-    `localChainTimeStamp` DateTime, 
+    `localChainTimeStamp` VARCHAR(255) DEFAULT '', 
 
     UNIQUE KEY(`certID`),
     PRIMARY KEY(`id`)
@@ -22,9 +22,9 @@ CREATE TABLE `globalChainInfo` (
     `id` int(20) NOT NULL AUTO_INCREMENT,
     `certIDList` TEXT ,
 
-    `globalChainTxHash`VARCHAR(255) DEFAULT '',
+    `globalChainTxHash`TEXT ,
     `globalChainBlockNum` int DEFAULT 0,
-    `globalChainTimeStamp` DateTime, 
+    `globalChainTimeStamp` VARCHAR(255) DEFAULT '', 
 
     PRIMARY KEY(`id`)
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;

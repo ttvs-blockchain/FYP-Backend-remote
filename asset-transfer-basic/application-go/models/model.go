@@ -14,14 +14,20 @@ type Asset struct {
 type LocalChainInfo struct {
 	LocalChainID        string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:"required"`
 	LocalChainTxHash    string `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:"required"`
-	LocalChainBlockNum  string `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:"required"`
-	LocalChainTimeStamp string `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:"required"`
+	LocalChainBlockNum  int64  `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:"required"`
+	LocalChainTimeStamp int64  `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:"required"`
 }
 
 type GlocalChainInfo struct {
-	ID                   string `form:"id" json:"id" xml:"id"  binding:"required"`
 	CertIDList           string `form:"localNodeID" json:"localNodeID" xml:"localNodeID"  binding:"required"`
 	GlobalChainTxHash    string `form:"globalChainTxHash" json:"globalChainTxHash" xml:"globalChainTxHash"  binding:"required"`
 	GlobalChainBlockNum  int64  `form:"globalChainBlockNum" json:"globalChainBlockNum" xml:"globalChainBlockNum"  binding:"required"`
 	GlobalChainTimeStamp int64  `form:"globalChainTimeStamp" json:"globalChainTimeStamp" xml:"globalChainTimeStamp"  binding:"required"`
+}
+
+type MerkelTreePath struct {
+	GlobalID    string
+	CurrentHash string
+	Path        []string
+	Indexes     []int64
 }

@@ -32,7 +32,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/Verify", controllers.Verify)
+	r.POST("/Verify", controllers.Verify)
 
 	r.GET("/GetAllAssets", controllers.GetAllAssets)
 
