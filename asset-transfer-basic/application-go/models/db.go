@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 var MyDatabase *sql.DB
@@ -73,4 +74,26 @@ func UpdateRow(info LocalChainInfo, id string) (err error) {
 	}
 	fmt.Printf("insert success, ", ret)
 	return nil
+}
+
+func ReadRowForMKTree() ([]string, error) {
+	sqlStr := READ_ROW_FOR_MKTREE_SQL
+	rows, err := MyDatabase.Query(sqlStr)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("query success\n")
+
+	var ids []string
+	for rows.Next() {
+		var id string
+
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(id)
+		ids = append(ids, id)
+	}
+	return ids, err
 }

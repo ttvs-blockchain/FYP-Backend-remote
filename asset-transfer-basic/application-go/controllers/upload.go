@@ -15,14 +15,52 @@ import (
 
 func Upload(c *gin.Context) {
 
-	log.Printf("--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
-	localRecord, err := Contract.EvaluateTransaction("GetAllAssets")
+	log.Printf("--> Evaluate Transaction: GetAssetsForMKTree")
+	// localRecord, err := Contract.EvaluateTransaction("GetAssetsForMKTree")
+	// if err != nil {
+	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	idList, err := models.ReadRowForMKTree()
+	if err != nil {
+		log.Printf("Failed to find on local db: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(idList) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "no new certificate for global chain",
+		})
+		return
+	}
+
+	fmt.Printf("--> Evaluate Transaction: Get id from db for upload, %s\n", idList)
+	var localRecords []*models.Asset
+
+	for _, s := range idList {
+		localAsset, err := Contract.EvaluateTransaction("ReadAsset", s)
+		var localAssetItem models.Asset
+		err = json.Unmarshal(localAsset, &localAssetItem)
+
+		if err != nil {
+			log.Printf("Failed to evaluate transaction: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		localRecords = append(localRecords, &localAssetItem)
+	}
+	localRecord, err := json.Marshal(localRecords)
+
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Printf("--> Evaluate Transaction: create merkel tree")
+
+	log.Printf("--> Evaluate Transaction: create merkel tree %s, \n", localRecord)
 
 	var dailyRecord []models.Asset
 	err = json.Unmarshal(localRecord, &dailyRecord)
@@ -31,6 +69,7 @@ func Upload(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	globalID := uuid.New().String()
 
 	merkelTree, err := utils.GetMerkelTree(dailyRecord, globalID)
@@ -58,7 +97,7 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	log.Printf("--> certIDList in DB, %s\n", certIDListJson)
+	// log.Printf("--> certIDList in DB, %s\n", certIDListJson)
 
 	var info = models.GlocalChainInfo{
 		string(certIDListJson),

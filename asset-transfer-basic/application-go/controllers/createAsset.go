@@ -31,10 +31,10 @@ func CreateAsset(c *gin.Context) {
 
 	// TODO let local chain have hashed done
 	var info = models.LocalChainInfo{
-		"testid",
-		"testhash",
-		1,
-		utils.GetUnixTime()}
+		"",
+		"",
+		utils.LOCAL_CHAIN_NO_BLK_NUM,
+		utils.LOCAL_CHAIN_NO_TIMESTAMP}
 	err = models.InsertCert(asset, info)
 
 	if err != nil {

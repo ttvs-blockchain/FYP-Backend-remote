@@ -12,10 +12,10 @@ type Asset struct {
 }
 
 type LocalChainInfo struct {
-	LocalChainID        string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:"required"`
-	LocalChainTxHash    string `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:"required"`
-	LocalChainBlockNum  int64  `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:"required"`
-	LocalChainTimeStamp int64  `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:"required"`
+	LocalChainID        string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:""`
+	LocalChainTxHash    string `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:""`
+	LocalChainBlockNum  int64  `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:""`
+	LocalChainTimeStamp int64  `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:""`
 }
 
 type GlocalChainInfo struct {

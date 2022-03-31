@@ -82,7 +82,7 @@ func GetMerkelTree(dailyRecord []models.Asset, globalID string) (*merkletree.Mer
 		}
 
 		info := models.LocalChainInfo{
-			"cid",
+			LOCAL_CHAIN_ID,
 			string(resultPathJson),
 			1,
 			GetUnixTime()}
@@ -91,9 +91,6 @@ func GetMerkelTree(dailyRecord []models.Asset, globalID string) (*merkletree.Mer
 		if err != nil {
 			return nil, err
 		}
-
-		fmt.Println("************* update row", i, "new items are",
-			info, dailyRecord[i].CertNo)
 
 	}
 
