@@ -42,6 +42,12 @@ func Upload(c *gin.Context) {
 
 	for _, s := range idList {
 		localAsset, err := Contract.EvaluateTransaction("ReadAsset", s)
+		if err != nil {
+			log.Printf("Failed to evaluate transaction: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
 		var localAssetItem models.Asset
 		err = json.Unmarshal(localAsset, &localAssetItem)
 
