@@ -15,13 +15,7 @@ import (
 
 func Upload(c *gin.Context) {
 
-	log.Printf("--> Evaluate Transaction: GetAssetsForMKTree")
-	// localRecord, err := Contract.EvaluateTransaction("GetAssetsForMKTree")
-	// if err != nil {
-	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	log.Printf("--> Evaluate Transaction: ReadRowForMKTree in db")
 
 	idList, err := models.ReadRowForMKTree()
 	if err != nil {
@@ -58,6 +52,7 @@ func Upload(c *gin.Context) {
 		}
 		localRecords = append(localRecords, &localAssetItem)
 	}
+
 	localRecord, err := json.Marshal(localRecords)
 
 	if err != nil {
@@ -68,72 +63,81 @@ func Upload(c *gin.Context) {
 
 	log.Printf("--> Evaluate Transaction: create merkel tree %s, \n", localRecord)
 
-	var dailyRecord []models.Asset
-	err = json.Unmarshal(localRecord, &dailyRecord)
+	var dailyRecords []models.Asset
+	err = json.Unmarshal(localRecord, &dailyRecords)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	globalID := uuid.New().String()
+	batchSize := utils.MAX_BATCH_SIZE_FOR_MKTREE
+	batches := make([][]models.Asset, 0, (len(dailyRecords)+batchSize-1)/batchSize)
+	for batchSize < len(dailyRecords) {
+		dailyRecords, batches = dailyRecords[batchSize:], append(batches, dailyRecords[0:batchSize:batchSize])
+	}
+	batches = append(batches, dailyRecords)
 
-	merkelTree, err := utils.GetMerkelTree(dailyRecord, globalID)
+	for _, s := range batches {
+		dailyRecord := s
 
-	if err != nil {
-		log.Printf("Failed to Create Merkel Tree: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		globalID := uuid.New().String()
+
+		merkelTree, err := utils.GetMerkelTree(dailyRecord, globalID)
+
+		if err != nil {
+			log.Printf("Failed to Create Merkel Tree: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		merkelTreeRoot := merkelTree.MerkleRoot()
+
+		merkelTreeRootStr := base64.StdEncoding.EncodeToString(merkelTreeRoot)
+		log.Printf("--> Evaluate Transaction: Upload to global chain")
+
+		var certIDList []string
+		for i, _ := range dailyRecord {
+			certIDList = append(certIDList, dailyRecord[i].CertNo)
+		}
+		certIDListJson, err := json.Marshal(certIDList)
+
+		if err != nil {
+			log.Printf("Failed to Submit transaction: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		var info = models.GlocalChainInfo{
+			string(certIDListJson),
+			merkelTreeRootStr,
+			1,
+			utils.GetUnixTime()}
+
+		result, err := GlobalContract.SubmitTransaction("CreateAsset",
+			globalID,
+			string(info.GlobalChainBlockNum),
+			info.GlobalChainTxHash,
+		)
+		fmt.Printf("-->Evaluate Transaction: result of CreateAsset is %s\n", result)
+		if err != nil {
+			log.Printf("Failed to Submit transaction: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		err = models.InsertGlobalHash(info)
+
+		if err != nil {
+			log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	merkelTreeRoot := merkelTree.MerkleRoot()
-
-	merkelTreeRootStr := base64.StdEncoding.EncodeToString(merkelTreeRoot)
-	log.Printf("--> Evaluate Transaction: Upload to global chain")
-
-	var certIDList []string
-	for i, _ := range dailyRecord {
-		certIDList = append(certIDList, dailyRecord[i].CertNo)
-	}
-	certIDListJson, err := json.Marshal(certIDList)
-
-	if err != nil {
-		log.Printf("Failed to Submit transaction: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// log.Printf("--> certIDList in DB, %s\n", certIDListJson)
-
-	var info = models.GlocalChainInfo{
-		string(certIDListJson),
-		merkelTreeRootStr,
-		1,
-		utils.GetUnixTime()}
-
-	result, err := GlobalContract.SubmitTransaction("CreateAsset",
-		globalID,
-		string(info.GlobalChainBlockNum),
-		info.GlobalChainTxHash,
-	)
-	fmt.Printf("\n\n\n!!!!!!!!!!!!!!!!!!!!debug id is %s , result is %s\n\n\n", globalID, string(result))
-	if err != nil {
-		log.Printf("Failed to Submit transaction: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = models.InsertGlobalHash(info)
-
-	if err != nil {
-		log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	log.Printf("--> Submit Transaction: Upload\n")
+	log.Printf("--> Finish Transaction: Upload\n")
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": string(result),
+		"message": "finish upload",
 	})
 }
