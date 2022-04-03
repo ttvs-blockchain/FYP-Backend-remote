@@ -19,6 +19,7 @@ type TestContent struct {
 //CalculateHash hashes the values of a TestContent
 func (t TestContent) CalculateHash() ([]byte, error) {
 	h := sha256.New()
+	fmt.Printf("-->Debug get string before hash %s", t.x)
 	if _, err := h.Write([]byte(t.x)); err != nil {
 		return nil, err
 	}
@@ -31,7 +32,7 @@ func (t TestContent) Equals(other merkletree.Content) (bool, error) {
 	return t.x == other.(TestContent).x, nil
 }
 
-func GetMerkelTree(dailyRecord []models.Asset, globalID string) (*merkletree.MerkleTree, error) {
+func GetMerkelTree(dailyRecord []models.InputInfo, globalID string) (*merkletree.MerkleTree, error) {
 	var list []merkletree.Content
 
 	for i, s := range dailyRecord {
@@ -84,10 +85,11 @@ func GetMerkelTree(dailyRecord []models.Asset, globalID string) (*merkletree.Mer
 		info := models.LocalChainInfo{
 			LOCAL_CHAIN_ID,
 			string(resultPathJson),
+			"",
 			1,
 			GetUnixTime()}
 
-		err = models.UpdateRow(info, dailyRecord[i].CertNo)
+		err = models.UpdateLocalCertDB(info, dailyRecord[i].CertDetail.CertNo)
 		if err != nil {
 			return nil, err
 		}

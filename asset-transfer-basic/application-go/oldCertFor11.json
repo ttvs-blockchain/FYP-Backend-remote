@@ -1,0 +1,13 @@
+ {
+    "CertDetail": {
+        "certNo": "a11",
+        "id": "IDTEST",
+        "name": "SinoVac",
+        "brand": "TestBrand",
+        "numOfDose": "3",
+        "time": "2022/02/22",
+        "issuer": "issuertest",
+        "remark": "no remark"
+    },
+    "PersonHash": "personhashsample"
+}

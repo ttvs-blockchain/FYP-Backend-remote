@@ -37,6 +37,8 @@ func main() {
 
 	r.POST("/Upload", controllers.Upload)
 
+	r.GET("/GetPath", controllers.GetPath)
+
 	r.Run(":8080") //
 
 	log.Printf("============ application-golang ends ============")

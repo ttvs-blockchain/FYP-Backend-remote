@@ -3,6 +3,7 @@ module asset-transfer-basic
 go 1.14
 
 require (
+	github.com/cbergoon/merkletree v0.2.0 // indirect
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0

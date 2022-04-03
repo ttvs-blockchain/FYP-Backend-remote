@@ -32,10 +32,9 @@ func Upload(c *gin.Context) {
 	}
 
 	fmt.Printf("--> Evaluate Transaction: Get id from db for upload, %s\n", idList)
-	var localRecords []*models.Asset
-
+	var inputInfoArray []models.InputInfo
 	for _, s := range idList {
-		localAsset, err := Contract.EvaluateTransaction("ReadAsset", s)
+		localAsset, err := Contract.EvaluateTransaction("ReadAsset", s[0])
 		if err != nil {
 			log.Printf("Failed to evaluate transaction: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -50,33 +49,34 @@ func Upload(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		localRecords = append(localRecords, &localAssetItem)
+		inputInfo := models.InputInfo{localAssetItem, s[1]}
+
+		inputInfoArray = append(inputInfoArray, inputInfo)
 	}
 
-	localRecord, err := json.Marshal(localRecords)
+	// localRecord, err := json.Marshal(InputInfoArray)
 
-	if err != nil {
-		log.Printf("Failed to evaluate transaction: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// if err != nil {
+	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	log.Printf("--> Evaluate Transaction: create merkel tree %s, \n", localRecord)
-
-	var dailyRecords []models.Asset
-	err = json.Unmarshal(localRecord, &dailyRecords)
-	if err != nil {
-		log.Printf("Failed to evaluate transaction: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// var inputInfoArray []models.Asset
+	// err = json.Unmarshal(localRecord, &inputInfoArray)
+	// if err != nil {
+	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// inputInfoArray := inputInfoArray
 
 	batchSize := utils.MAX_BATCH_SIZE_FOR_MKTREE
-	batches := make([][]models.Asset, 0, (len(dailyRecords)+batchSize-1)/batchSize)
-	for batchSize < len(dailyRecords) {
-		dailyRecords, batches = dailyRecords[batchSize:], append(batches, dailyRecords[0:batchSize:batchSize])
+	batches := make([][]models.InputInfo, 0, (len(inputInfoArray)+batchSize-1)/batchSize)
+	for batchSize < len(inputInfoArray) {
+		inputInfoArray, batches = inputInfoArray[batchSize:], append(batches, inputInfoArray[0:batchSize:batchSize])
 	}
-	batches = append(batches, dailyRecords)
+	batches = append(batches, inputInfoArray)
 
 	for _, s := range batches {
 		dailyRecord := s
@@ -98,7 +98,7 @@ func Upload(c *gin.Context) {
 
 		var certIDList []string
 		for i, _ := range dailyRecord {
-			certIDList = append(certIDList, dailyRecord[i].CertNo)
+			certIDList = append(certIDList, dailyRecord[i].CertDetail.CertNo)
 		}
 		certIDListJson, err := json.Marshal(certIDList)
 
@@ -111,13 +111,14 @@ func Upload(c *gin.Context) {
 		var info = models.GlocalChainInfo{
 			string(certIDListJson),
 			merkelTreeRootStr,
+			"",
 			1,
 			utils.GetUnixTime()}
 
 		result, err := GlobalContract.SubmitTransaction("CreateAsset",
 			globalID,
 			string(info.GlobalChainBlockNum),
-			info.GlobalChainTxHash,
+			info.MerkelTreeRoot,
 		)
 		fmt.Printf("-->Evaluate Transaction: result of CreateAsset is %s\n", result)
 		if err != nil {
@@ -126,7 +127,7 @@ func Upload(c *gin.Context) {
 			return
 		}
 
-		err = models.InsertGlobalHash(info)
+		err = models.InsertGlobalHashDB(info)
 
 		if err != nil {
 			log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)

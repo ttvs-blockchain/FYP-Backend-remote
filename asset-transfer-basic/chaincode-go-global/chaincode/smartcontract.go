@@ -17,6 +17,7 @@ type SmartContract struct {
 type Asset struct {
 	ID                   string `form:"id" json:"id" xml:"id"  binding:"required"`
 	LocalChainID         string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:"required"`
+	MerkelTreeRoot       string `form:"merkelTreeRoot" json:"merkelTreeRoot" xml:"merkelTreeRoot"  binding:"required"`
 	GlobalChainTxHash    string `form:"globalChainTxHash" json:"globalChainTxHash" xml:"globalChainTxHash"  binding:"required"`
 	GlobalChainBlockNum  int64  `form:"globalChainBlockNum" json:"globalChainBlockNum" xml:"globalChainBlockNum"  binding:"required"`
 	GlobalChainTimeStamp int64  `form:"globalChainTimeStamp" json:"globalChainTimeStamp" xml:"globalChainTimeStamp"  binding:"required"`
@@ -28,6 +29,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 		{
 			ID:                   "testID",
 			LocalChainID:         "testLocalChainID",
+			MerkelTreeRoot:       "merkeltreeroot test",
 			GlobalChainTxHash:    "testGlobalChainTxHash",
 			GlobalChainBlockNum:  1,
 			GlobalChainTimeStamp: time.Now().Unix(),
@@ -53,7 +55,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
 	id string,
 	localChainID string,
-	globalChainTxHash string) error {
+	merkelTreeRoot string) error {
 
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -66,7 +68,8 @@ func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
 	asset := Asset{
 		ID:                   id,
 		LocalChainID:         localChainID,
-		GlobalChainTxHash:    globalChainTxHash,
+		MerkelTreeRoot:       merkelTreeRoot,
+		GlobalChainTxHash:    "",
 		GlobalChainBlockNum:  1,
 		GlobalChainTimeStamp: time.Now().Unix()}
 

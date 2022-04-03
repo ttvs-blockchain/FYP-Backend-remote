@@ -9,6 +9,10 @@ CREATE TABLE `localCertificate` (
     `issuer` VARCHAR(255) DEFAULT '',
     `remark` VARCHAR(255) DEFAULT '',
 
+    `personHash` TEXT,
+
+    `merkelTreePath` TEXT, 
+
     `localChainID` VARCHAR(255) DEFAULT '',
     `localChainTxHash` TEXT,
     `localChainBlockNum` int DEFAULT 0,
@@ -21,6 +25,8 @@ CREATE TABLE `localCertificate` (
 CREATE TABLE `globalChainInfo` (
     `id` int(20) NOT NULL AUTO_INCREMENT,
     `certIDList` TEXT ,
+
+    `merkelTreeRoot` TEXT, 
 
     `globalChainTxHash`TEXT ,
     `globalChainBlockNum` int DEFAULT 0,

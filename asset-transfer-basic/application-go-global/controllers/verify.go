@@ -41,17 +41,13 @@ func Verify(c *gin.Context) {
 		return
 	}
 
-	log.Println("111111111111111111111111111111")
-
-	// var mkTreePath models.MerkelTreePath
-	// err = json.Unmarshal([]byte(mktreePath), &mkTreePath)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	merkelTreeRoot, err := base64.StdEncoding.DecodeString(globalChainInfo.GlobalChainTxHash)
+	merkelTreeRoot, err := base64.StdEncoding.DecodeString(globalChainInfo.MerkelTreeRoot)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -82,9 +78,9 @@ func Verify(c *gin.Context) {
 	for i, s := range path {
 
 		if indexes[i] == 1 {
-			a = getHash(a, s)
+			a = GetHash(a, s)
 		} else {
-			a = getHash(s, a)
+			a = GetHash(s, a)
 		}
 
 		if err != nil {
@@ -98,14 +94,14 @@ func Verify(c *gin.Context) {
 	}
 
 	resultCheck := bytes.Equal(a, merkelTreeRoot)
-	fmt.Printf("\n\n\nCheck result by path %v\n\n\n", resultCheck)
+	fmt.Printf("\n\n\nCheck result root is %s, result is  %v\n\n\n", merkelTreeRoot, resultCheck)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": resultCheck,
 	})
 }
 
-func getHash(a []byte, b []byte) []byte {
+func GetHash(a []byte, b []byte) []byte {
 
 	h := sha256.New()
 	fmt.Printf("the input is %s,    %s\n",

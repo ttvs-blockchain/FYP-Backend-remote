@@ -1,5 +1,6 @@
 # curl -v -X GET "http://localhost:8081/GetAllAssets"
 
-curl -v -X POST http://localhost:8081/Verify -H 'content-type: application/json' -d '{"GlobalID":"aad5f84e-02ea-4338-b75b-4ce3d7aaca47","CurrentHash":"x4t5bey6sur2eELdNklYYXggVsA75ZixPugR2EQyCFI=","Path":["+av+/yWjeBZVYf++IxjfPTGAct4CUXYp/fz+CQd9mf4=","SXghPf/dB0i9xjDyG25jslSJkJPS/hhmoOIv43W5md4=","Q5k5ngrWgOe3HrQyzMWnpS9bU6brkLbvpbGimOMXa1A="],"Indexes":[0,0,0]}'
+# curl -v -X POST http://localhost:8081/Verify -H 'content-type: application/json' -d ' {"GlobalID":"0db1a2ef-7dc3-426d-950a-c710ee603f31","CurrentHash":"jk2gH/emOEAS4L6rD1umcwgjih/PatbazARXH8lKzWo=","Path":["+r0JSJPWaRVOEmkrllfsBocDealHPBrm+6jtg7Mwkyk=","0ac2gDZrYRNX71XSM0dz2SpS5DMcvDbCaUkbUiGxUlw=","cyLIAbjOGKv/iUKQmibxdhw75+V+3AA5Grx13v/Jjcc="],"Indexes":[1,1,1]}'
 
+curl -v -X POST "http://localhost:8081/VerifyCert" -H 'content-type: application/json' -d '{"CertNo":"a11","LocalChainID":"1", "PersonHash":"personhashsample"}'
 
