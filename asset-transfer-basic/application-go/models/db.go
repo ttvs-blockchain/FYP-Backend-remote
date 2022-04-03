@@ -1,0 +1,123 @@
+package models
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+)
+
+var MyDatabase *sql.DB
+
+func InitDB() (err error) {
+	// DSN:Data Source Name
+
+	MyDatabase, err = sql.Open("mysql", DSN)
+	if err != nil {
+		return err
+	}
+	err = MyDatabase.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func InsertLocalDBCert(asset Asset, personHash string) (err error) {
+	sqlStr := INSERT_CERT_SQL
+	ret, err := MyDatabase.Exec(sqlStr,
+		asset.CertNo,
+		asset.ID,
+		asset.Name,
+		asset.Brand,
+		asset.NumOfDose,
+		asset.Time,
+		asset.Issuer,
+		asset.Remark,
+		personHash,
+	)
+	if err != nil {
+		return err
+	}
+	theID, err := ret.LastInsertId()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+	return nil
+}
+
+func InsertGlobalHashDB(info GlocalChainInfo) (err error) {
+	sqlStr := INSERT_GLOBAL_HASH_SQL
+	ret, err := MyDatabase.Exec(sqlStr,
+		info.CertIDList,
+		info.MerkelTreeRoot,
+		info.GlobalChainBlockNum,
+		info.GlobalChainTimeStamp)
+	if err != nil {
+		return err
+	}
+	theID, err := ret.LastInsertId()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+	return nil
+}
+
+func UpdateLocalCertDB(info LocalChainInfo, id string) (err error) {
+	sqlStr := UPDATE_SQL
+	ret, err := MyDatabase.Exec(sqlStr,
+		info.LocalChainID,
+		info.MerkelTreePathDetail,
+		info.LocalChainBlockNum,
+		info.LocalChainTimeStamp,
+		id)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("insert success, ", ret)
+	return nil
+}
+
+func ReadRowForMKTree() ([][]string, error) {
+	sqlStr := READ_ROW_FOR_MKTREE_SQL
+	rows, err := MyDatabase.Query(sqlStr)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("query success\n")
+
+	var listOfRow [][]string
+	for rows.Next() {
+		var id string
+		var personHash string
+		err := rows.Scan(&id, &personHash)
+		if err != nil {
+			log.Fatal(err)
+		}
+		idAndPersonHash := []string{id, personHash}
+		listOfRow = append(listOfRow, idAndPersonHash)
+	}
+	return listOfRow, err
+}
+
+func ReadPath(certID string) (*Asset, string, string, error) {
+	sqlStr := READ_PATH_SQL
+
+	var personID, name, brand, numOfDose, issueTime, issuer, remark, personHash, merkelTreePath string
+
+	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personID, &name, &brand, &numOfDose, &issueTime, &issuer, &remark, &personHash, &merkelTreePath)
+	if err != nil {
+		fmt.Printf("Error,  %s,\n", err.Error())
+
+		return nil, "", "", err
+	}
+
+	fmt.Printf("debug 999, personID is %s,\n", personID)
+
+	asset := Asset{
+		certID, personID, name, brand, numOfDose, issueTime, issuer, remark}
+	fmt.Printf("debug 0000, asset is %s, personHash is %s, path is %s\n", asset, personHash, merkelTreePath)
+
+	return &asset, personHash, merkelTreePath, nil
+}
