@@ -19,7 +19,7 @@ type TestContent struct {
 //CalculateHash hashes the values of a TestContent
 func (t TestContent) CalculateHash() ([]byte, error) {
 	h := sha256.New()
-	fmt.Printf("-->Debug get string before hash %s", t.x)
+	fmt.Printf("-->Debug get string before hash %s\n", t.x)
 	if _, err := h.Write([]byte(t.x)); err != nil {
 		return nil, err
 	}

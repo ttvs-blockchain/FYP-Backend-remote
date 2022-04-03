@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -65,12 +64,14 @@ func VerifyCert(c *gin.Context) {
 
 	asset := response.AssetDetail
 
+	fmt.Printf("-->New Person hash  is !!!!!%s!!!\n", personHash)
+
 	newInputInfo := models.InputInfo{asset, personHash}
 
-	input := newInputInfo.CertDetail.Time
-	fmt.Printf("-->old time is %s\n", input)
+	// input := newInputInfo.CertDetail.Time
+	// fmt.Printf("-->old time is %s\n", input)
 
-	newInputInfo.CertDetail.Time = strings.ReplaceAll(input[0:10], "-", "/")
+	newInputInfo.CertDetail.Time = newInputInfo.CertDetail.Time[0:16]
 
 	newInputInfoJson, err := json.Marshal(newInputInfo)
 
@@ -79,7 +80,7 @@ func VerifyCert(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Printf("-->New Current Hash is %s\n", newInputInfoJson)
+	fmt.Printf("-->New Current InputInfo is %s\n", newInputInfoJson)
 
 	h := sha256.New()
 	if _, err := h.Write([]byte(newInputInfoJson)); err != nil {
