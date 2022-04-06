@@ -16,12 +16,12 @@ func CreateAsset(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	input.CertDetail.Time = input.CertDetail.Time[0:16]
 	fmt.Printf("--> Input check: %s\n", input)
 	asset := input.CertDetail
 	personHash := input.PersonInfoHash
 
 	log.Printf("--> Submit Transaction: CreateAsset, creates new asset with %v, \n", asset)
-
 	result, err := Contract.SubmitTransaction("CreateAsset",
 		asset.CertNo, asset.ID, asset.Name, asset.Brand, asset.NumOfDose, asset.Time, asset.Issuer, asset.Remark)
 
