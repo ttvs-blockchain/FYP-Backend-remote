@@ -55,23 +55,6 @@ func Upload(c *gin.Context) {
 		inputInfoArray = append(inputInfoArray, inputInfo)
 	}
 
-	// localRecord, err := json.Marshal(InputInfoArray)
-
-	// if err != nil {
-	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// var inputInfoArray []models.Asset
-	// err = json.Unmarshal(localRecord, &inputInfoArray)
-	// if err != nil {
-	// 	log.Printf("Failed to evaluate transaction: %v\n", err)
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// inputInfoArray := inputInfoArray
-
 	batchSize := utils.MAX_BATCH_SIZE_FOR_MKTREE
 	batches := make([][]models.InputInfo, 0, (len(inputInfoArray)+batchSize-1)/batchSize)
 	for batchSize < len(inputInfoArray) {

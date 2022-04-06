@@ -9,5 +9,5 @@
         "issuer": "issuertest",
         "remark": "no remark"
     },
-    "PersonHash": "personhashsample"
+    "PersonInfoHash": "PersonInfoHashsample"
 }

@@ -30,7 +30,7 @@ func InitDB() (err error) {
 	return nil
 }
 
-func InsertLocalDBCert(asset Asset, personHash string) (err error) {
+func InsertLocalDBCert(asset Asset, personInfoHash string) (err error) {
 	sqlStr := INSERT_CERT_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
 		asset.CertNo,
@@ -41,7 +41,7 @@ func InsertLocalDBCert(asset Asset, personHash string) (err error) {
 		asset.Time,
 		asset.Issuer,
 		asset.Remark,
-		personHash,
+		personInfoHash,
 	)
 	if err != nil {
 		return err
@@ -98,13 +98,13 @@ func ReadRowForMKTree() ([][]string, error) {
 	var listOfRow [][]string
 	for rows.Next() {
 		var id string
-		var personHash string
-		err := rows.Scan(&id, &personHash)
+		var personInfoHash string
+		err := rows.Scan(&id, &personInfoHash)
 		if err != nil {
 			log.Fatal(err)
 		}
-		idAndPersonHash := []string{id, personHash}
-		listOfRow = append(listOfRow, idAndPersonHash)
+		idAndpersonInfoHash := []string{id, personInfoHash}
+		listOfRow = append(listOfRow, idAndpersonInfoHash)
 	}
 	return listOfRow, err
 }
@@ -112,10 +112,10 @@ func ReadRowForMKTree() ([][]string, error) {
 func ReadPath(certID string) (*Asset, string, string, error) {
 	sqlStr := READ_PATH_SQL
 
-	var personID, name, brand, numOfDose, issueTime, issuer, remark, personHash, merkleTreePath string
+	var personID, name, brand, numOfDose, issueTime, issuer, remark, personInfoHash, merkleTreePath string
 
 	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personID, &name, &brand, &numOfDose, &issueTime,
-		&issuer, &remark, &personHash, &merkleTreePath)
+		&issuer, &remark, &personInfoHash, &merkleTreePath)
 	if err != nil {
 		fmt.Printf("Error,  %s,\n", err.Error())
 
@@ -126,7 +126,7 @@ func ReadPath(certID string) (*Asset, string, string, error) {
 
 	asset := Asset{
 		certID, personID, name, brand, numOfDose, issueTime, issuer, remark}
-	fmt.Printf("debug 0000, asset is %s, personHash is %s, path is %s\n", asset, personHash, merkleTreePath)
+	fmt.Printf("debug 0000, asset is %s, personInfoHash is %s, path is %s\n", asset, personInfoHash, merkleTreePath)
 
-	return &asset, personHash, merkleTreePath, nil
+	return &asset, personInfoHash, merkleTreePath, nil
 }

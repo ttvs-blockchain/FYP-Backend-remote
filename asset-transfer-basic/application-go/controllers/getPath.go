@@ -12,20 +12,20 @@ import (
 func GetPath(c *gin.Context) {
 	log.Println("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
 	certNo := c.Query("CertNo")
-	asset, personHash, path, err := models.ReadPath(certNo)
+	asset, personInfoHash, path, err := models.ReadPath(certNo)
 
-	fmt.Printf("debug 1111, asset is %s, personHash is %s, path is %s\n", asset, personHash, path)
+	fmt.Printf("debug 1111, asset is %s, personInfoHash is %s, path is %s\n", asset, personInfoHash, path)
 	if err != nil {
 		// log.Println("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Printf("debug 2222, asset is %s, personHash is %s, path is %s\n", asset, personHash, path)
+	fmt.Printf("debug 2222, asset is %s, personInfoHash is %s, path is %s\n", asset, personInfoHash, path)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":    "okay",
-		"asset":      asset,
-		"personHash": personHash,
-		"path":       path,
+		"message":        "okay",
+		"asset":          asset,
+		"personInfoHash": personInfoHash,
+		"path":           path,
 	})
 }

@@ -19,7 +19,7 @@ func CreateAsset(c *gin.Context) {
 	input.CertDetail.Time = input.CertDetail.Time[0:16]
 	fmt.Printf("--> Input check: %s\n", input)
 	asset := input.CertDetail
-	personHash := input.PersonInfoHash
+	personInfoHash := input.PersonInfoHash
 
 	log.Printf("--> Submit Transaction: CreateAsset, creates new asset with %v, \n", asset)
 	result, err := Contract.SubmitTransaction("CreateAsset",
@@ -32,9 +32,7 @@ func CreateAsset(c *gin.Context) {
 	}
 	log.Printf("--> Submit Transaction: CreateAsset, start store in DB\n")
 
-	// TODO let local chain have hashed done
-
-	err = models.InsertLocalDBCert(asset, personHash)
+	err = models.InsertLocalDBCert(asset, personInfoHash)
 
 	if err != nil {
 		log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)

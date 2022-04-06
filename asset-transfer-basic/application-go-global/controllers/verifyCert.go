@@ -43,9 +43,8 @@ func VerifyCert(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// fmt.Printf("-->MerkelTreePath is %s,\n", response.MKTreePathDetail)
 
-	var mktreePath models.MerkelTreePath
+	var mktreePath models.MerkleTreePath
 	err = json.Unmarshal([]byte(response.MKTreePathDetail), &mktreePath)
 	if err != nil {
 		log.Println("Failed to evaluate json: GetPathInfo 222 %s, %s\n", response.MKTreePathDetail, err)
@@ -61,13 +60,13 @@ func VerifyCert(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	personHash := verifyInfo.PersonHash
+	personInfoHash := verifyInfo.PersonInfoHash
 
 	asset := response.AssetDetail
 
-	fmt.Printf("-->New Person hash  is !!!!!%s!!!\n", personHash)
+	fmt.Printf("-->New Person hash  is !!!!!%s!!!\n", personInfoHash)
 
-	newInputInfo := models.InputInfo{asset, personHash}
+	newInputInfo := models.InputInfo{asset, personInfoHash}
 
 	// input := newInputInfo.CertDetail.Time
 	// fmt.Printf("-->old time is %s\n", input)
@@ -124,9 +123,9 @@ func VerifyCert(c *gin.Context) {
 		return
 	}
 
-	merkelTreeRoot, err := base64.StdEncoding.DecodeString(globalChainInfo.MerkelTreeRoot)
+	merkleTreeRoot, err := base64.StdEncoding.DecodeString(globalChainInfo.MerkleTreeRoot)
 
-	fmt.Printf("--> Merkel Tree Root is %v \n", merkelTreeRoot)
+	fmt.Printf("--> Merkle Tree Root is %v \n", merkleTreeRoot)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -172,10 +171,27 @@ func VerifyCert(c *gin.Context) {
 
 	}
 
-	resultCheck := bytes.Equal(a, merkelTreeRoot)
+	resultCheck := bytes.Equal(a, merkleTreeRoot)
 	fmt.Printf("\n\n\nCheck result by path %v\n\n\n", resultCheck)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": resultCheck,
 	})
+}
+
+func GetHash(a []byte, b []byte) []byte {
+
+	h := sha256.New()
+	fmt.Printf("the input is %s,    %s\n",
+		base64.StdEncoding.EncodeToString(a),
+		base64.StdEncoding.EncodeToString(b))
+
+	if _, err := h.Write(append(a, b...)); err != nil {
+		// return nil, err
+		fmt.Printf("GG")
+	}
+
+	fmt.Printf("the out is %s\n",
+		base64.StdEncoding.EncodeToString(h.Sum(nil)))
+	return h.Sum(nil)
 }
