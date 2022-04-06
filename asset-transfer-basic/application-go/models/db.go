@@ -4,14 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+
+	"gopkg.in/ini.v1"
 )
 
 var MyDatabase *sql.DB
 
 func InitDB() (err error) {
 	// DSN:Data Source Name
-
-	MyDatabase, err = sql.Open("mysql", DSN)
+	cfg, err := ini.Load("config.ini")
+	if err != nil {
+		fmt.Printf("Fail to read file: %v", err)
+		os.Exit(1)
+	}
+	dsn := cfg.Section("server").Key("dsn").String()
+	MyDatabase, err = sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}

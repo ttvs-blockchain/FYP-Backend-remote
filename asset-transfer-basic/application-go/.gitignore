@@ -4,3 +4,5 @@ wallet
 keystore
 
 .vscode/
+
+config.ini

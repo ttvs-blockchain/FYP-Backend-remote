@@ -22,7 +22,7 @@ func main() {
 
 	err := models.InitDB() //
 	if err != nil {
-		fmt.Printf("init db failed,err:%v\n", err)
+		fmt.Printf("init db failed, err:%v\n", err)
 		return
 	}
 	log.Printf("============ database connected  ============")
