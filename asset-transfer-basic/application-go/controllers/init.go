@@ -16,7 +16,7 @@ var GlobalContract *gateway.Contract
 func init() {
 	err := os.Setenv("DISCOVERY_AS_LOCALHOST", "true")
 	if err != nil {
-		log.Fatalf("Error setting DISCOVERY_AS_LOCALHOST environemnt variable: %v\n", err)
+		log.Fatalf("Error setting DISCOVERY_AS_LOCALHOST environment variable: %v\n", err)
 	}
 
 	wallet, err := gateway.NewFileSystemWallet("wallet")

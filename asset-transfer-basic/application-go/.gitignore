@@ -2,3 +2,5 @@ wallet
 !wallet/.gitkeep
 
 keystore
+
+.vscode/

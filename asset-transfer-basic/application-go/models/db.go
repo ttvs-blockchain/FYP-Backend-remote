@@ -46,11 +46,11 @@ func InsertLocalDBCert(asset Asset, personHash string) (err error) {
 	return nil
 }
 
-func InsertGlobalHashDB(info GlocalChainInfo) (err error) {
+func InsertGlobalHashDB(info GlobalChainInfo) (err error) {
 	sqlStr := INSERT_GLOBAL_HASH_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
 		info.CertIDList,
-		info.MerkelTreeRoot,
+		info.MerkleTreeRoot,
 		info.GlobalChainBlockNum,
 		info.GlobalChainTimeStamp)
 	if err != nil {
@@ -68,14 +68,14 @@ func UpdateLocalCertDB(info LocalChainInfo, id string) (err error) {
 	sqlStr := UPDATE_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
 		info.LocalChainID,
-		info.MerkelTreePathDetail,
+		info.MerkleTreePathDetail,
 		info.LocalChainBlockNum,
 		info.LocalChainTimeStamp,
 		id)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("insert success, ", ret)
+	fmt.Printf("insert success, %d\n", ret)
 	return nil
 }
 
@@ -104,9 +104,10 @@ func ReadRowForMKTree() ([][]string, error) {
 func ReadPath(certID string) (*Asset, string, string, error) {
 	sqlStr := READ_PATH_SQL
 
-	var personID, name, brand, numOfDose, issueTime, issuer, remark, personHash, merkelTreePath string
+	var personID, name, brand, numOfDose, issueTime, issuer, remark, personHash, merkleTreePath string
 
-	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personID, &name, &brand, &numOfDose, &issueTime, &issuer, &remark, &personHash, &merkelTreePath)
+	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personID, &name, &brand, &numOfDose, &issueTime,
+		&issuer, &remark, &personHash, &merkleTreePath)
 	if err != nil {
 		fmt.Printf("Error,  %s,\n", err.Error())
 
@@ -117,7 +118,7 @@ func ReadPath(certID string) (*Asset, string, string, error) {
 
 	asset := Asset{
 		certID, personID, name, brand, numOfDose, issueTime, issuer, remark}
-	fmt.Printf("debug 0000, asset is %s, personHash is %s, path is %s\n", asset, personHash, merkelTreePath)
+	fmt.Printf("debug 0000, asset is %s, personHash is %s, path is %s\n", asset, personHash, merkleTreePath)
 
-	return &asset, personHash, merkelTreePath, nil
+	return &asset, personHash, merkleTreePath, nil
 }

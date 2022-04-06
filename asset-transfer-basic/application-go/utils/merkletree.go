@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cbergoon/merkletree"
+	mt "github.com/cbergoon/merkletree"
 )
 
-//TestContent implements the Content interface provided by merkletree and represents the content stored in the tree.
+//TestContent implements the Content interface provided by merkle tree and represents the content stored in the tree.
 type TestContent struct {
 	x string
 }
@@ -28,12 +28,12 @@ func (t TestContent) CalculateHash() ([]byte, error) {
 }
 
 //Equals tests for equality of two Contents
-func (t TestContent) Equals(other merkletree.Content) (bool, error) {
+func (t TestContent) Equals(other mt.Content) (bool, error) {
 	return t.x == other.(TestContent).x, nil
 }
 
-func GetMerkelTree(dailyRecord []models.InputInfo, globalID string) (*merkletree.MerkleTree, error) {
-	var list []merkletree.Content
+func GetMerkleTree(dailyRecord []models.InputInfo, globalID string) (*mt.MerkleTree, error) {
+	var list []mt.Content
 
 	for i, s := range dailyRecord {
 		fmt.Println(i, s)
@@ -46,7 +46,7 @@ func GetMerkelTree(dailyRecord []models.InputInfo, globalID string) (*merkletree
 	}
 
 	//Create a new Merkle Tree from the list of Content
-	t, err := merkletree.NewTree(list)
+	t, err := mt.NewTree(list)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -70,24 +70,24 @@ func GetMerkelTree(dailyRecord []models.InputInfo, globalID string) (*merkletree
 			resultPath = append(resultPath, base64.StdEncoding.EncodeToString(s))
 		}
 		currentHashStr := base64.StdEncoding.EncodeToString(currentHash)
-		var merkelTreePath = models.MerkelTreePath{
-			globalID,
-			currentHashStr,
-			resultPath,
-			indexes}
+		var merkleTreePath = models.MerkleTreePath{
+			GlobalID:    globalID,
+			CurrentHash: currentHashStr,
+			Path:        resultPath,
+			Indexes:     indexes}
 
-		resultPathJson, err := json.Marshal(merkelTreePath)
+		resultPathJson, err := json.Marshal(merkleTreePath)
 		if err != nil {
 			fmt.Println("failed when getting path in json")
 			return nil, err
 		}
 
 		info := models.LocalChainInfo{
-			LOCAL_CHAIN_ID,
-			string(resultPathJson),
-			"",
-			1,
-			GetUnixTime()}
+			LocalChainID:         LOCAL_CHAIN_ID,
+			MerkleTreePathDetail: string(resultPathJson),
+			LocalChainTxHash:     "",
+			LocalChainBlockNum:   1,
+			LocalChainTimeStamp:  GetUnixTime()}
 
 		err = models.UpdateLocalCertDB(info, dailyRecord[i].CertDetail.CertNo)
 		if err != nil {

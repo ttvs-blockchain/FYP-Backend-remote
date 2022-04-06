@@ -12,27 +12,27 @@ type Asset struct {
 }
 
 type InputInfo struct {
-	CertDetail Asset  `form:"CertDetail" json:"CertDetail" xml:"CertDetail"  binding:"required"`
-	PersonHash string `form:"PersonHash" json:"PersonHash" xml:"PersonHash"  binding:"required"`
+	CertDetail     Asset  `form:"CertDetail" json:"CertDetail" xml:"CertDetail"  binding:"required"`
+	PersonInfoHash string `form:"PersonInfoHash" json:"PersonInfoHash" xml:"PersonInfoHash"  binding:"required"`
 }
 
 type LocalChainInfo struct {
 	LocalChainID         string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:""`
-	MerkelTreePathDetail string `form:"merkelTreePathDetail" json:"merkelTreePathDetail" xml:"merkelTreePathDetail"  binding:"required"`
+	MerkleTreePathDetail string `form:"merkleTreePathDetail" json:"merkleTreePathDetail" xml:"merkleTreePathDetail"  binding:"required"`
 	LocalChainTxHash     string `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:""`
 	LocalChainBlockNum   int64  `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:""`
 	LocalChainTimeStamp  int64  `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:""`
 }
 
-type GlocalChainInfo struct {
+type GlobalChainInfo struct {
 	CertIDList           string `form:"certIDList" json:"certIDList" xml:"certIDList"  binding:"required"`
-	MerkelTreeRoot       string `form:"merkelTreeRoot" json:"merkelTreeRoot" xml:"merkelTreeRoot"  binding:"required"`
+	MerkleTreeRoot       string `form:"merkleTreeRoot" json:"merkleTreeRoot" xml:"merkleTreeRoot"  binding:"required"`
 	GlobalChainTxHash    string `form:"globalChainTxHash" json:"globalChainTxHash" xml:"globalChainTxHash"  binding:""`
 	GlobalChainBlockNum  int64  `form:"globalChainBlockNum" json:"globalChainBlockNum" xml:"globalChainBlockNum"  binding:""`
 	GlobalChainTimeStamp int64  `form:"globalChainTimeStamp" json:"globalChainTimeStamp" xml:"globalChainTimeStamp"  binding:""`
 }
 
-type MerkelTreePath struct {
+type MerkleTreePath struct {
 	GlobalID    string
 	CurrentHash string
 	Path        []string

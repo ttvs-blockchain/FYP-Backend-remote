@@ -12,7 +12,7 @@ func ReadAsset(c *gin.Context) {
 	CertNo := c.Query("CertNo")
 	result, err := Contract.EvaluateTransaction("ReadAsset", CertNo)
 	if err != nil {
-		log.Println("Failed to evaluate transaction: %v\n", err)
+		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -49,7 +50,7 @@ func Upload(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		inputInfo := models.InputInfo{localAssetItem, s[1]}
+		inputInfo := models.InputInfo{CertDetail: localAssetItem, PersonInfoHash: s[1]}
 
 		inputInfoArray = append(inputInfoArray, inputInfo)
 	}
@@ -83,21 +84,21 @@ func Upload(c *gin.Context) {
 
 		globalID := uuid.New().String()
 
-		merkelTree, err := utils.GetMerkelTree(dailyRecord, globalID)
+		merkleTree, err := utils.GetMerkleTree(dailyRecord, globalID)
 
 		if err != nil {
-			log.Printf("Failed to Create Merkel Tree: %v\n", err)
+			log.Printf("Failed to Create Merkle Tree: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		merkelTreeRoot := merkelTree.MerkleRoot()
+		merkleTreeRoot := merkleTree.MerkleRoot()
 
-		merkelTreeRootStr := base64.StdEncoding.EncodeToString(merkelTreeRoot)
+		merkleTreeRootStr := base64.StdEncoding.EncodeToString(merkleTreeRoot)
 		log.Printf("--> Evaluate Transaction: Upload to global chain")
 
 		var certIDList []string
-		for i, _ := range dailyRecord {
+		for i := range dailyRecord {
 			certIDList = append(certIDList, dailyRecord[i].CertDetail.CertNo)
 		}
 		certIDListJson, err := json.Marshal(certIDList)
@@ -108,17 +109,17 @@ func Upload(c *gin.Context) {
 			return
 		}
 
-		var info = models.GlocalChainInfo{
-			string(certIDListJson),
-			merkelTreeRootStr,
-			"",
-			1,
-			utils.GetUnixTime()}
+		var info = models.GlobalChainInfo{
+			CertIDList:           string(certIDListJson),
+			MerkleTreeRoot:       merkleTreeRootStr,
+			GlobalChainTxHash:    "",
+			GlobalChainBlockNum:  1,
+			GlobalChainTimeStamp: utils.GetUnixTime()}
 
 		result, err := GlobalContract.SubmitTransaction("CreateAsset",
 			globalID,
-			string(info.GlobalChainBlockNum),
-			info.MerkelTreeRoot,
+			strconv.Itoa(int(info.GlobalChainBlockNum)),
+			info.MerkleTreeRoot,
 		)
 		fmt.Printf("-->Evaluate Transaction: result of CreateAsset is %s\n", result)
 		if err != nil {

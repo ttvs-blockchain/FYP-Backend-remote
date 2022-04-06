@@ -18,7 +18,7 @@ func CreateAsset(c *gin.Context) {
 	}
 	fmt.Printf("--> Input check: %s\n", input)
 	asset := input.CertDetail
-	personHash := input.PersonHash
+	personHash := input.PersonInfoHash
 
 	log.Printf("--> Submit Transaction: CreateAsset, creates new asset with %v, \n", asset)
 
