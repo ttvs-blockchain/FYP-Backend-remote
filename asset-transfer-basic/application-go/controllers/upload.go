@@ -32,7 +32,6 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("--> Evaluate Transaction: Get id from db for upload, %s\n", idList)
 	var inputInfoArray []models.InputInfo
 	for _, s := range idList {
 		localAsset, err := Contract.EvaluateTransaction("ReadAsset", s[0])
@@ -55,46 +54,56 @@ func Upload(c *gin.Context) {
 		inputInfoArray = append(inputInfoArray, inputInfo)
 	}
 
-	batchSize := utils.MAX_BATCH_SIZE_FOR_MKTREE
-	batches := make([][]models.InputInfo, 0, (len(inputInfoArray)+batchSize-1)/batchSize)
-	for batchSize < len(inputInfoArray) {
-		inputInfoArray, batches = inputInfoArray[batchSize:], append(batches, inputInfoArray[0:batchSize:batchSize])
-	}
-	batches = append(batches, inputInfoArray)
+	batches := utils.CreateBatches(inputInfoArray)
 
-	for _, s := range batches {
-		dailyRecord := s
+	var infoArray []models.GlobalChainInfo
+	for _, batch := range batches {
 
 		globalID := uuid.New().String()
 
-		merkleTree, err := utils.GetMerkleTree(dailyRecord, globalID)
-
+		list, err := utils.ConvertTreeContent(batch)
 		if err != nil {
-			log.Printf("Failed to Create Merkle Tree: %v\n", err)
+			log.Printf("Failed to ConvertTreeContent: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		merkleTree, err := utils.GetMerkleTree(list)
+		if err != nil {
+			log.Printf("Failed to GetMerkleTree: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		merkleTreeRoot := merkleTree.MerkleRoot()
+		err = utils.StoreMerklePath(list, merkleTree, globalID, batch)
+		if err != nil {
+			log.Printf("Failed to StoreMerklePath: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		// err = models.UpdateMultipleLocalCertDB(merklePaths, batch)
+		// if err != nil {
+		// 	log.Printf("Failed to Create Merkle Tree: %v\n", err)
+		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// 	return
+		// }
 
-		merkleTreeRootStr := base64.StdEncoding.EncodeToString(merkleTreeRoot)
+		merkleTreeRoot := base64.StdEncoding.EncodeToString(merkleTree.MerkleRoot())
 		log.Printf("--> Evaluate Transaction: Upload to global chain")
 
-		var certIDList []string
-		for i := range dailyRecord {
-			certIDList = append(certIDList, dailyRecord[i].CertDetail.CertNo)
+		var batchCertIDList []string
+		for i := range batch {
+			batchCertIDList = append(batchCertIDList, batch[i].CertDetail.CertID)
 		}
-		certIDListJson, err := json.Marshal(certIDList)
-
+		batchCertIDListJson, err := json.Marshal(batchCertIDList)
 		if err != nil {
-			log.Printf("Failed to Submit transaction: %v\n", err)
+			log.Printf("Failed to Construct cert ID list: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		var info = models.GlobalChainInfo{
-			CertIDList:           string(certIDListJson),
-			MerkleTreeRoot:       merkleTreeRootStr,
+			CertIDList:           string(batchCertIDListJson),
+			MerkleTreeRoot:       merkleTreeRoot,
 			GlobalChainTxHash:    "",
 			GlobalChainBlockNum:  1,
 			GlobalChainTimeStamp: utils.GetUnixTime()}
@@ -104,20 +113,24 @@ func Upload(c *gin.Context) {
 			strconv.Itoa(int(info.GlobalChainBlockNum)),
 			info.MerkleTreeRoot,
 		)
-		fmt.Printf("-->Evaluate Transaction: result of CreateAsset is %s\n", result)
+
 		if err != nil {
 			log.Printf("Failed to Submit transaction: %v\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		err = models.InsertGlobalHashDB(info)
+		fmt.Printf("-->Evaluate Transaction: result of CreateAsset is %s\n", result)
+		infoArray = append(infoArray, info)
+	}
 
-		if err != nil {
-			log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+	log.Printf("--> Start Insert Multiple Rows to DB")
+
+	err = models.InsertMultipleToGlobalHashDB(infoArray)
+	if err != nil {
+		log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	log.Printf("--> Finish Transaction: Upload\n")

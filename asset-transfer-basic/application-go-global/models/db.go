@@ -21,13 +21,13 @@ func InitDB() (err error) {
 	return nil
 }
 
-func InsertGlobal(info GlocalChainInfo) error {
+func InsertGlobal(info GlobalChainInfo) error {
 	sqlStr := INSERT_GLOBAL_HASH_SQL
 
 	ret, err := MyDatabase.Exec(
 		sqlStr,
 		info.CertIDList,
-		info.GlobalChainTxHash,
+		info.MerkleTreeRoot,
 		info.GlobalChainBlockNum,
 		info.GlobalChainTimeStamp)
 	if err != nil {

@@ -9,8 +9,8 @@ import (
 
 func ReadAsset(c *gin.Context) {
 	log.Println("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
-	CertNo := c.Query("CertNo")
-	result, err := Contract.EvaluateTransaction("ReadAsset", CertNo)
+	CertID := c.Query("CertID")
+	result, err := Contract.EvaluateTransaction("ReadAsset", CertID)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

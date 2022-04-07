@@ -1,7 +1,7 @@
 CREATE TABLE `localCertificate` (
     `id` int(20) NOT NULL AUTO_INCREMENT,
     `certID` VARCHAR(255) DEFAULT '',
-    `personID` VARCHAR(255) DEFAULT '',
+    `personSysID` VARCHAR(255) DEFAULT '',
     `name` VARCHAR(255) DEFAULT '',
     `brand` VARCHAR(255) DEFAULT '',
     `numOfDose` int DEFAULT 0,
@@ -12,6 +12,8 @@ CREATE TABLE `localCertificate` (
     `personInfoHash` TEXT,
 
     `merkleTreePath` TEXT, 
+    `merkleTreeIndexes` TEXT,
+    `globalRootID`   TEXT,
 
     `keyHash` TEXT, 
 

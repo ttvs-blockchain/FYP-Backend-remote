@@ -1,14 +1,14 @@
 package models
 
 type Asset struct {
-	CertNo    string `form:"certNo" json:"certNo" xml:"certNo"  binding:"required"`
-	ID        string `form:"id" json:"id" xml:"color"  binding:"required"`
-	Name      string `form:"name" json:"name" xml:"name"  binding:"required"`
-	Brand     string `form:"brand" json:"brand" xml:"brand"  binding:"required"`
-	NumOfDose string `form:"numOfDose" json:"numOfDose" xml:"numOfDose"  binding:"required"`
-	Time      string `form:"time" json:"time" xml:"time"  binding:"required"`
-	Issuer    string `form:"issuer" json:"issuer" xml:"issuer"  binding:"required"`
-	Remark    string `form:"remark" json:"remark" xml:"remark"  binding:""`
+	CertID      string `form:"certID" json:"certID" xml:"certID"  binding:"required"`
+	PersonSysID string `form:"personSysID" json:"personSysID" xml:"personSysID"  binding:"required"`
+	Name        string `form:"name" json:"name" xml:"name"  binding:"required"`
+	Brand       string `form:"brand" json:"brand" xml:"brand"  binding:"required"`
+	NumOfDose   string `form:"numOfDose" json:"numOfDose" xml:"numOfDose"  binding:"required"`
+	Time        string `form:"time" json:"time" xml:"time"  binding:"required"`
+	Issuer      string `form:"issuer" json:"issuer" xml:"issuer"  binding:"required"`
+	Remark      string `form:"remark" json:"remark" xml:"remark"  binding:""`
 }
 
 type InputInfo struct {
@@ -17,12 +17,17 @@ type InputInfo struct {
 	Key            string `form:"Key" json:"Key" xml:"Key"  binding:"required"`
 }
 
+type VerifyInfo struct {
+	VerifyInputInfo InputInfo      `form:"VerifyInputInfo" json:"VerifyInputInfo" xml:"VerifyInputInfo"  binding:"required"`
+	VerifyPath      MerkleTreePath `form:"VerifyPath" json:"VerifyPath" xml:"VerifyPath"  binding:"required"`
+}
+
 type LocalChainInfo struct {
-	LocalChainID         string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:""`
-	MerkleTreePathDetail string `form:"merkleTreePathDetail" json:"merkleTreePathDetail" xml:"merkleTreePathDetail"  binding:"required"`
-	LocalChainTxHash     string `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:""`
-	LocalChainBlockNum   int64  `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:""`
-	LocalChainTimeStamp  int64  `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:""`
+	LocalChainID         string         `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:""`
+	MerkleTreePathDetail MerkleTreePath `form:"merkleTreePathDetail" json:"merkleTreePathDetail" xml:"merkleTreePathDetail"  binding:"required"`
+	LocalChainTxHash     string         `form:"localChainTxHash" json:"localChainTxHash" xml:"localChainTxHash"  binding:""`
+	LocalChainBlockNum   int64          `form:"localChainBlockNum" json:"localChainBlockNum" xml:"localChainBlockNum"  binding:""`
+	LocalChainTimeStamp  int64          `form:"localChainTimeStamp" json:"localChainTimeStamp" xml:"localChainTimeStamp"  binding:""`
 }
 
 type GlobalChainInfo struct {
@@ -34,8 +39,7 @@ type GlobalChainInfo struct {
 }
 
 type MerkleTreePath struct {
-	GlobalID    string
-	CurrentHash string
-	Path        []string
-	Indexes     []int64
+	GlobalRootID string
+	Path         []string
+	Indexes      []int64
 }

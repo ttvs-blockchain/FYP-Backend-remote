@@ -11,8 +11,8 @@ package controllers
 
 // func GetPath(c *gin.Context) {
 // 	log.Println("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
-// 	certNo := c.Query("CertNo")
-// 	asset, personInfoHash, path, err := models.ReadPath(certNo)
+// 	certID := c.Query("CertID")
+// 	asset, personInfoHash, path, err := models.ReadPath(certID)
 
 // 	fmt.Printf("debug 1111, asset is %s, personInfoHash is %s, path is %s\n", asset, personInfoHash, path)
 // 	if err != nil {

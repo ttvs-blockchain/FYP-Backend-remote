@@ -30,14 +30,14 @@ func CreateAsset(c *gin.Context) {
 
 	log.Printf("--> Submit Transaction: CreateAsset, creates new asset with %v, \n", asset)
 	result, err := Contract.SubmitTransaction("CreateAsset",
-		asset.CertNo, asset.ID, asset.Name, asset.Brand, asset.NumOfDose, asset.Time, asset.Issuer, asset.Remark)
+		asset.CertID, asset.PersonSysID, asset.Name, asset.Brand, asset.NumOfDose, asset.Time, asset.Issuer, asset.Remark)
 
 	if err != nil {
 		log.Printf("Failed to Submit transaction: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Printf("--> Submit Transaction: CreateAsset, start store in DB\n")
+	log.Printf("--> Submit Transaction: CreateAsset, result is %v, start store in DB\n", result)
 
 	err = models.InsertLocalDBCert(asset, personInfoHash, keyHash)
 
@@ -48,6 +48,6 @@ func CreateAsset(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": string(result),
+		"message": "create success",
 	})
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -33,8 +34,8 @@ func InitDB() (err error) {
 func InsertLocalDBCert(asset Asset, personInfoHash, keyHash string) (err error) {
 	sqlStr := INSERT_CERT_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
-		asset.CertNo,
-		asset.ID,
+		asset.CertID,
+		asset.PersonSysID,
 		asset.Name,
 		asset.Brand,
 		asset.NumOfDose,
@@ -55,29 +56,43 @@ func InsertLocalDBCert(asset Asset, personInfoHash, keyHash string) (err error) 
 	return nil
 }
 
-func InsertGlobalHashDB(info GlobalChainInfo) (err error) {
+func InsertMultipleToGlobalHashDB(infos []GlobalChainInfo) (err error) {
 	sqlStr := INSERT_GLOBAL_HASH_SQL
-	ret, err := MyDatabase.Exec(sqlStr,
-		info.CertIDList,
-		info.MerkleTreeRoot,
-		info.GlobalChainBlockNum,
-		info.GlobalChainTimeStamp)
+	vals := []interface{}{}
+	for _, info := range infos {
+		sqlStr += "(?, ?, ?, ?),"
+		vals = append(vals, info.CertIDList, info.MerkleTreeRoot, info.GlobalChainBlockNum, info.GlobalChainTimeStamp)
+	}
+	//trim the last ,
+	sqlStr = sqlStr[0 : len(sqlStr)-1]
+	stmt, _ := MyDatabase.Prepare(sqlStr)
+	res, _ := stmt.Exec(vals...)
+	rowsAffected, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}
-	theID, err := ret.LastInsertId()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("insert success, the id is %d.\n", theID)
+	fmt.Printf("insert success, there are %v rows affected\n", rowsAffected)
+
 	return nil
 }
 
 func UpdateLocalCertDB(info LocalChainInfo, id string) (err error) {
+
+	path, err := json.Marshal(info.MerkleTreePathDetail.Path)
+	if err != nil {
+		return err
+	}
+	indexes, err := json.Marshal(info.MerkleTreePathDetail.Indexes)
+	if err != nil {
+		return err
+	}
+
 	sqlStr := UPDATE_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
 		info.LocalChainID,
-		info.MerkleTreePathDetail,
+		string(path),
+		string(indexes),
+		info.MerkleTreePathDetail.GlobalRootID,
 		info.LocalChainBlockNum,
 		info.LocalChainTimeStamp,
 		id)
@@ -87,6 +102,42 @@ func UpdateLocalCertDB(info LocalChainInfo, id string) (err error) {
 	fmt.Printf("insert success, %d\n", ret)
 	return nil
 }
+
+// func UpdateMultipleLocalCertDB(infos []LocalChainInfo, dailyRecord []InputInfo) (err error) {
+
+// 	sqlStr := UPDATE_MULTIPLE_SQL_START
+
+// 	vals := []interface{}{}
+// 	for i, info := range infos {
+// 		sqlStr += "(?, ?, ?, ?, ?, ?, ?),"
+// 		vals = append(vals,
+// 			info.LocalChainID,
+// 			info.MerkleTreePathDetail.Path,
+// 			info.MerkleTreePathDetail.Indexes,
+// 			info.MerkleTreePathDetail.GlobalRootID,
+// 			info.LocalChainBlockNum,
+// 			info.LocalChainTimeStamp,
+// 			dailyRecord[i].CertDetail.CertID)
+// 	}
+// 	//trim the last ,
+// 	sqlStr = sqlStr[0 : len(sqlStr)-1]
+
+// 	sqlStr += UPDATE_MULTIPLE_SQL_END
+// 	log.Println("-->DEBUG SQL STR " + sqlStr)
+
+// 	log.Println(vals)
+
+// 	stmt, _ := MyDatabase.Prepare(sqlStr)
+// 	res, _ := stmt.Exec(vals...)
+
+// 	if err != nil {
+// 		return err
+// 	}
+// 	fmt.Printf("insert success, %v\n", res)
+
+// 	return nil
+
+// }
 
 func ReadRowForMKTree() ([][]string, error) {
 	sqlStr := READ_ROW_FOR_MKTREE_SQL
@@ -111,9 +162,9 @@ func ReadRowForMKTree() ([][]string, error) {
 func ReadPath(certID string) (*Asset, string, string, error) {
 	sqlStr := READ_PATH_SQL
 
-	var personID, name, brand, numOfDose, issueTime, issuer, remark, personInfoHash, merkleTreePath string
+	var personSysID, name, brand, numOfDose, issueTime, issuer, remark, personInfoHash, merkleTreePath string
 
-	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personID, &name, &brand, &numOfDose, &issueTime,
+	err := MyDatabase.QueryRow(sqlStr, certID).Scan(&personSysID, &name, &brand, &numOfDose, &issueTime,
 		&issuer, &remark, &personInfoHash, &merkleTreePath)
 	if err != nil {
 		fmt.Printf("Error,  %s,\n", err.Error())
@@ -121,10 +172,10 @@ func ReadPath(certID string) (*Asset, string, string, error) {
 		return nil, "", "", err
 	}
 
-	fmt.Printf("debug 999, personID is %s,\n", personID)
+	fmt.Printf("debug 999, personSysID is %s,\n", personSysID)
 
 	asset := Asset{
-		certID, personID, name, brand, numOfDose, issueTime, issuer, remark}
+		certID, personSysID, name, brand, numOfDose, issueTime, issuer, remark}
 	fmt.Printf("debug 0000, asset is %s, personInfoHash is %s, path is %s\n", asset, personInfoHash, merkleTreePath)
 
 	return &asset, personInfoHash, merkleTreePath, nil

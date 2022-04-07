@@ -21,7 +21,7 @@ func VerifyPath(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	id := verifyInfo.VerifyPath.GlobalID
+	id := verifyInfo.VerifyPath.GlobalRootID
 
 	log.Println("--> Evaluate Transaction: ID is ", id)
 
@@ -33,7 +33,7 @@ func VerifyPath(c *gin.Context) {
 	}
 
 	log.Println(string(result))
-	var globalChainInfo models.GlocalChainInfo
+	var globalChainInfo models.GlobalChainInfo
 	err = json.Unmarshal(result, &globalChainInfo)
 	if err != nil {
 		log.Printf("Failed to evaluate transaction: %v\n", err)

@@ -32,7 +32,7 @@ func (t TestContent) Equals(other mt.Content) (bool, error) {
 	return t.x == other.(TestContent).x, nil
 }
 
-func GetMerkleTree(dailyRecord []models.InputInfo, globalID string) (*mt.MerkleTree, error) {
+func ConvertTreeContent(dailyRecord []models.InputInfo) ([]mt.Content, error) {
 	var list []mt.Content
 
 	for i, s := range dailyRecord {
@@ -44,6 +44,11 @@ func GetMerkleTree(dailyRecord []models.InputInfo, globalID string) (*mt.MerkleT
 		}
 		list = append(list, TestContent{x: string(jsonS)})
 	}
+	return list, nil
+
+}
+
+func GetMerkleTree(list []mt.Content) (*mt.MerkleTree, error) {
 
 	//Create a new Merkle Tree from the list of Content
 	t, err := mt.NewTree(list)
@@ -52,54 +57,46 @@ func GetMerkleTree(dailyRecord []models.InputInfo, globalID string) (*mt.MerkleT
 		return nil, err
 	}
 
+	return t, nil
+
+}
+
+func StoreMerklePath(list []mt.Content, t *mt.MerkleTree, globalID string, dailyRecord []models.InputInfo) error {
 	for i, s := range list {
 		// fmt.Println(i, s)
 		path, indexes, err := t.GetMerklePath(s)
 		if err != nil {
 			fmt.Println("failed when getting path ")
-			return nil, err
+			return err
 		}
-		currentHash, err := s.CalculateHash()
 		if err != nil {
 			fmt.Println("failed when getting currentHash ")
-			return nil, err
+			return err
 		}
 
 		var resultPath []string
 		for _, s := range path {
 			resultPath = append(resultPath, base64.StdEncoding.EncodeToString(s))
 		}
-		currentHashStr := base64.StdEncoding.EncodeToString(currentHash)
 		var merkleTreePath = models.MerkleTreePath{
-			GlobalID:    globalID,
-			CurrentHash: currentHashStr,
-			Path:        resultPath,
-			Indexes:     indexes}
-
-		resultPathJson, err := json.Marshal(merkleTreePath)
-		if err != nil {
-			fmt.Println("failed when getting path in json")
-			return nil, err
-		}
+			GlobalRootID: globalID,
+			Path:         resultPath,
+			Indexes:      indexes}
 
 		info := models.LocalChainInfo{
 			LocalChainID:         LOCAL_CHAIN_ID,
-			MerkleTreePathDetail: string(resultPathJson),
+			MerkleTreePathDetail: merkleTreePath,
 			LocalChainTxHash:     "",
 			LocalChainBlockNum:   1,
 			LocalChainTimeStamp:  GetUnixTime()}
 
-		err = models.UpdateLocalCertDB(info, dailyRecord[i].CertDetail.CertNo)
+		err = models.UpdateLocalCertDB(info, dailyRecord[i].CertDetail.CertID)
 		if err != nil {
-			return nil, err
+			return err
 		}
-
 	}
 
-	fmt.Println("*************get path end")
-
-	return t, nil
-
+	return nil
 }
 
 func reverseArray(arr [][]byte) [][]byte {
@@ -124,4 +121,14 @@ func getHash(a []byte, b []byte) []byte {
 	fmt.Printf("the out is %s\n",
 		base64.StdEncoding.EncodeToString(h.Sum(nil)))
 	return h.Sum(nil)
+}
+
+func CreateBatches(inputInfos []models.InputInfo) [][]models.InputInfo {
+	batchSize := MAX_BATCH_SIZE_FOR_MKTREE
+	batches := make([][]models.InputInfo, 0, (len(inputInfos)+batchSize-1)/batchSize)
+	for batchSize < len(inputInfos) {
+		inputInfos, batches = inputInfos[batchSize:], append(batches, inputInfos[0:batchSize:batchSize])
+	}
+	batches = append(batches, inputInfos)
+	return batches
 }

@@ -15,7 +15,7 @@ type SmartContract struct {
 
 // Asset describes basic details of what makes up a simple asset
 type Asset struct {
-	ID                   string `form:"id" json:"id" xml:"id"  binding:"required"`
+	GlobalRootID         string `form:"globalRootID" json:"globalRootID" xml:"globalRootID"  binding:"required"`
 	LocalChainID         string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:"required"`
 	MerkleTreeRoot       string `form:"merkleTreeRoot" json:"merkleTreeRoot" xml:"merkleTreeRoot"  binding:"required"`
 	GlobalChainTxHash    string `form:"globalChainTxHash" json:"globalChainTxHash" xml:"globalChainTxHash"  binding:"required"`
@@ -27,7 +27,7 @@ type Asset struct {
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	assets := []Asset{
 		{
-			ID:                   "testID",
+			GlobalRootID:         "testID",
 			LocalChainID:         "testLocalChainID",
 			MerkleTreeRoot:       "merkletreeroot test",
 			GlobalChainTxHash:    "testGlobalChainTxHash",
@@ -42,7 +42,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			return err
 		}
 
-		err = ctx.GetStub().PutState(asset.ID, assetJSON)
+		err = ctx.GetStub().PutState(asset.GlobalRootID, assetJSON)
 		if err != nil {
 			return fmt.Errorf("failed to put to world state. %v", err)
 		}
@@ -53,20 +53,20 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 
 // CreateAsset issues a new asset to the world state with given details.
 func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
-	id string,
+	globalRootID string,
 	localChainID string,
 	merkleTreeRoot string) error {
 
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, globalRootID)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return fmt.Errorf("the asset %s already exists", id)
+		return fmt.Errorf("the asset %s already exists", globalRootID)
 	}
 
 	asset := Asset{
-		ID:                   id,
+		GlobalRootID:         globalRootID,
 		LocalChainID:         localChainID,
 		MerkleTreeRoot:       merkleTreeRoot,
 		GlobalChainTxHash:    "",
@@ -77,17 +77,17 @@ func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
 	if err != nil {
 		return err
 	}
-	return ctx.GetStub().PutState(id, assetJSON)
+	return ctx.GetStub().PutState(globalRootID, assetJSON)
 }
 
-// ReadAsset returns the asset stored in the world state with given certNo.
-func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, id string) (*Asset, error) {
-	assetJSON, err := ctx.GetStub().GetState(id)
+// ReadAsset returns the asset stored in the world state with given certID.
+func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, globalRootID string) (*Asset, error) {
+	assetJSON, err := ctx.GetStub().GetState(globalRootID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read from world state: %v", err)
 	}
 	if assetJSON == nil {
-		return nil, fmt.Errorf("the asset %s does not exist", id)
+		return nil, fmt.Errorf("the asset %s does not exist", globalRootID)
 	}
 
 	var asset Asset
@@ -100,8 +100,8 @@ func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, i
 }
 
 // AssetExists returns true when asset with given ID exists in world state
-func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
-	assetJSON, err := ctx.GetStub().GetState(id)
+func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, globalRootID string) (bool, error) {
+	assetJSON, err := ctx.GetStub().GetState(globalRootID)
 	if err != nil {
 		return false, fmt.Errorf("failed to read from world state: %v", err)
 	}

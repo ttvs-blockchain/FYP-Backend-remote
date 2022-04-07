@@ -9,9 +9,9 @@ package controllers
 // 		return
 // 	}
 
-// 	log.Printf("--> Get Path and Cert on local server, %s", verifyInfo.CertNo)
+// 	log.Printf("--> Get Path and Cert on local server, %s", verifyInfo.CertID)
 
-// 	resp, err := http.Get("http://localhost:8080/GetPath?CertNo=" + verifyInfo.CertNo)
+// 	resp, err := http.Get("http://localhost:8080/GetPath?CertID=" + verifyInfo.CertID)
 // 	if err != nil {
 // 		log.Println("Failed to get from DB: %s\n", err.Error())
 // 		c.JSON(http.StatusBadRequest, gin.H{"error": "this certificate haven't been uploaded to global chain"})
