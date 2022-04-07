@@ -30,7 +30,7 @@ func InitDB() (err error) {
 	return nil
 }
 
-func InsertLocalDBCert(asset Asset, personInfoHash string) (err error) {
+func InsertLocalDBCert(asset Asset, personInfoHash, keyHash string) (err error) {
 	sqlStr := INSERT_CERT_SQL
 	ret, err := MyDatabase.Exec(sqlStr,
 		asset.CertNo,
@@ -42,6 +42,7 @@ func InsertLocalDBCert(asset Asset, personInfoHash string) (err error) {
 		asset.Issuer,
 		asset.Remark,
 		personInfoHash,
+		keyHash,
 	)
 	if err != nil {
 		return err
@@ -97,14 +98,12 @@ func ReadRowForMKTree() ([][]string, error) {
 
 	var listOfRow [][]string
 	for rows.Next() {
-		var id string
-		var personInfoHash string
-		err := rows.Scan(&id, &personInfoHash)
+		var id, personInfoHash, keyHash string
+		err := rows.Scan(&id, &personInfoHash, &keyHash)
 		if err != nil {
 			log.Fatal(err)
 		}
-		idAndpersonInfoHash := []string{id, personInfoHash}
-		listOfRow = append(listOfRow, idAndpersonInfoHash)
+		listOfRow = append(listOfRow, []string{id, personInfoHash, keyHash})
 	}
 	return listOfRow, err
 }

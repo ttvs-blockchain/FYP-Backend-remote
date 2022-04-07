@@ -1,0 +1,29 @@
+{
+    "VerifyInputInfo": {
+        "CertDetail": {
+            "CertNo": "TEST20220413_5",
+            "ID": "M123456(0)",
+            "Name": "CoronaVac",
+            "Brand": "SinoVac",
+            "NumOfDose": "2",
+            "Time": "2022-04-03T15:50",
+            "Issuer": "vac_center1"
+        },
+        "PersonInfoHash": "047d1be86e0ed70abfd55540a1d6fe09c91c74eb99f82d4f77926b721a87b0fe",
+        "Key": "413hfu234"
+    },
+    "VerifyPath": {
+        "GlobalID": "c5fe5eb8-c4aa-49b6-9422-2785dbd0e71a",
+        "CurrentHash": "",
+        "Path": [
+            "MT7xnxMjJWim0HU6QWjqN1jK4flOePPDLFtUkbQBRpE=",
+            "b5Ws2KFsegb0JIj292cLBZTc7BPkNBpfVGN8xtZ/dYs=",
+            "LtVsvHo6YIcXjMvbPc2meOnKegTNo4n2o8S6KWue6JU="
+        ],
+        "Indexes": [
+            0,
+            1,
+            0
+        ]
+    }
+}

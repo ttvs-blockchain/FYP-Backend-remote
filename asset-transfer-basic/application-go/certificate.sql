@@ -13,6 +13,8 @@ CREATE TABLE `localCertificate` (
 
     `merkleTreePath` TEXT, 
 
+    `keyHash` TEXT, 
+
     `localChainID` VARCHAR(255) DEFAULT '',
     `localChainTxHash` TEXT,
     `localChainBlockNum` int DEFAULT 0,

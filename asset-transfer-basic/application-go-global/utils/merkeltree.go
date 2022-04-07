@@ -28,14 +28,7 @@ func (t TestContent) Equals(other merkletree.Content) (bool, error) {
 	return t.x == other.(TestContent).x, nil
 }
 
-func reverseArray(arr [][]byte) [][]byte {
-	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
-		arr[i], arr[j] = arr[j], arr[i]
-	}
-	return arr
-}
-
-func getHash(a []byte, b []byte) []byte {
+func GetHash(a []byte, b []byte) []byte {
 
 	h := sha256.New()
 	fmt.Printf("the input is %s,    %s\n",

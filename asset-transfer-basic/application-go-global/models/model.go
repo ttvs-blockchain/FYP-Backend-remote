@@ -14,12 +14,11 @@ type Asset struct {
 type InputInfo struct {
 	CertDetail     Asset  `form:"CertDetail" json:"CertDetail" xml:"CertDetail"  binding:"required"`
 	PersonInfoHash string `form:"PersonInfoHash" json:"PersonInfoHash" xml:"PersonInfoHash"  binding:"required"`
+	Key            string `form:"Key" json:"Key" xml:"Key"  binding:"required"`
 }
-
 type VerifyInfo struct {
-	CertNo         string `form:"certNo" json:"certNo" xml:"certNo"  binding:"required"`
-	LocalChainID   string `form:"localChainID" json:"localChainID" xml:"localChainID"  binding:"required"`
-	PersonInfoHash string `form:"personInfoHash" json:"personInfoHash" xml:"personInfoHash"  binding:"required"`
+	VerifyInputInfo InputInfo      `form:"VerifyInputInfo" json:"VerifyInputInfo" xml:"VerifyInputInfo"  binding:"required"`
+	VerifyPath      MerkleTreePath `form:"VerifyPath" json:"VerifyPath" xml:"VerifyPath"  binding:"required"`
 }
 
 type LocalChainInfo struct {
@@ -38,15 +37,8 @@ type GlocalChainInfo struct {
 	GlobalChainTimeStamp int64  `form:"globalChainTimeStamp" json:"globalChainTimeStamp" xml:"globalChainTimeStamp"  binding:""`
 }
 type MerkleTreePath struct {
-	GlobalID    string
-	CurrentHash string
-	Path        []string
-	Indexes     []int64
-}
-
-type GetPathInfo struct {
-	Message          string `form:"message" json:"message" xml:"message"  binding:"required"`
-	AssetDetail      Asset  `form:"asset" json:"asset" xml:"asset"  binding:"required"`
-	PersonInfoHash   string `form:"personInfoHash" json:"personInfoHash" xml:"personInfoHash"  binding:"required"`
-	MKTreePathDetail string `form:"path" json:"path" xml:"path"  binding:"required"`
+	GlobalID    string   `form:"globalID" json:"globalID" xml:"globalID"  binding:"required"`
+	CurrentHash string   `form:"currentHash" json:"currentHash" xml:"currentHash"  binding:""`
+	Path        []string `form:"path" json:"path" xml:"path"  binding:"required"`
+	Indexes     []int64  `form:"indexes" json:"indexes" xml:"indexes"  binding:"required"`
 }

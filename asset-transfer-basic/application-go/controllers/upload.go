@@ -50,7 +50,7 @@ func Upload(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		inputInfo := models.InputInfo{CertDetail: localAssetItem, PersonInfoHash: s[1]}
+		inputInfo := models.InputInfo{CertDetail: localAssetItem, PersonInfoHash: s[1], Key: s[2]}
 
 		inputInfoArray = append(inputInfoArray, inputInfo)
 	}

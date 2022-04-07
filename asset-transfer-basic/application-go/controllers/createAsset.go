@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"asset-transfer-basic/models"
+	"asset-transfer-basic/utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,6 +21,12 @@ func CreateAsset(c *gin.Context) {
 	fmt.Printf("--> Input check: %s\n", input)
 	asset := input.CertDetail
 	personInfoHash := input.PersonInfoHash
+	keyHash, err := utils.GetHashString(input.Key)
+	if err != nil {
+		log.Printf("Failed to Create Key Hash: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	log.Printf("--> Submit Transaction: CreateAsset, creates new asset with %v, \n", asset)
 	result, err := Contract.SubmitTransaction("CreateAsset",
@@ -32,7 +39,7 @@ func CreateAsset(c *gin.Context) {
 	}
 	log.Printf("--> Submit Transaction: CreateAsset, start store in DB\n")
 
-	err = models.InsertLocalDBCert(asset, personInfoHash)
+	err = models.InsertLocalDBCert(asset, personInfoHash, keyHash)
 
 	if err != nil {
 		log.Printf("Failed to Insert Row in DB for transaction: %v\n", err)

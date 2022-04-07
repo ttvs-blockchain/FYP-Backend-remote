@@ -34,7 +34,7 @@ func main() {
 
 	r.GET("/GetAllAssets", controllers.GetAllAssets)
 
-	r.POST("/VerifyCert", controllers.VerifyCert)
+	r.POST("/VerifyPath", controllers.VerifyPath)
 
 	r.Run(":8081") // listen and serve on 0.0.0.0:8081 (for windows "localhost:8080")
 

@@ -14,6 +14,7 @@ type Asset struct {
 type InputInfo struct {
 	CertDetail     Asset  `form:"CertDetail" json:"CertDetail" xml:"CertDetail"  binding:"required"`
 	PersonInfoHash string `form:"PersonInfoHash" json:"PersonInfoHash" xml:"PersonInfoHash"  binding:"required"`
+	Key            string `form:"Key" json:"Key" xml:"Key"  binding:"required"`
 }
 
 type LocalChainInfo struct {
