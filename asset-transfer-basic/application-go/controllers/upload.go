@@ -80,12 +80,6 @@ func Upload(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		// err = models.UpdateMultipleLocalCertDB(merklePaths, batch)
-		// if err != nil {
-		// 	log.Printf("Failed to Create Merkle Tree: %v\n", err)
-		// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		// 	return
-		// }
 
 		merkleTreeRoot := base64.StdEncoding.EncodeToString(merkleTree.MerkleRoot())
 		log.Printf("--> Evaluate Transaction: Upload to global chain")

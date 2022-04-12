@@ -10,4 +10,7 @@
 
 cd ../asset-transfer-basic/application-go
 rm wallet/appUser.id 
-go run main.go
+
+cd ../application-go-global
+rm wallet/appUser.id 
+

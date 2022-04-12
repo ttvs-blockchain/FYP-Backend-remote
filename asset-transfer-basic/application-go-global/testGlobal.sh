@@ -1,9 +1,9 @@
 
 
-curl -v -X POST "http://localhost:8081/VerifyPath" -H 'content-type: application/json' -d '{
+time curl -v -X POST "http://localhost:8081/VerifyPath" -H 'content-type: application/json' -d '{
     "VerifyInputInfo": {
         "CertDetail": {
-            "CertID": "TEST20220300_5",
+            "CertID": "TEST20220206_10",
             "PersonSysID": "M123456(0)",
             "Name": "CoronaVac",
             "Brand": "SinoVac",
@@ -15,13 +15,16 @@ curl -v -X POST "http://localhost:8081/VerifyPath" -H 'content-type: application
         "Key": "413hfu234"
     },
     "VerifyPath": {
-        "GlobalRootID": "955b658e-b3b1-4b7e-a9f4-e4b4059ed7a7",
-        "Path": [
-            "SUN83LhrpECne/8cb73N8MhbehBrsX7bTdaDdM748jM=",
-            "KPjW2LycxjjpPuINv/jirDlLBuzE7tlmnFpTaCa/WtU=",
-            "youFUQeKzNcHOgHXvTo52A1xknt1FdCPifWygccarAI="
+        "GlobalRootID": "66048fd0-5bf7-4e04-ab37-5fa7eb607e63",
+        "Path": 
+        [
+            "zjLNBrmixWR6BeJGMdeO8vMXZhaXOQgfhrAOAILV5sA=",
+            "abURhtxXORhrYLLk78zIPBS0IhxR2YKxP9sEvjVuVi8=",
+            "ji/uMusHTRqmwFV2Z1cjPH6ZdJKhjt/S4euiUt8V0CY=",
+            "C7UN8l0e83IZ+7bZxEFeOjLQjbhkfGUPJW0OfNfqpMY="
         ],
         "Indexes": [
+            1,
             0,
             1,
             0
