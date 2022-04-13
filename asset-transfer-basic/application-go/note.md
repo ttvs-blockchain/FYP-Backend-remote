@@ -8,11 +8,14 @@ By measuring the response time in python requests package, we can measure the e2
 
 ## Table for experiments trial 1 on local backend
 
-|no. of cetificates | $2^4$   |   $2^5$  |  $2^6$   |   $2^7$  |   $2^8$  |   $2^9$ |   $2^{10}$  |
+|no. of cetificates in series | $2^4$   |   $2^5$  |  $2^6$   |   $2^7$  |   $2^8$  |   $2^9$ |   $2^{10}$  |
 |:-----------:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
 |issuing time | 2.14248    |   2.15303  |  2.14166  |   2.14512 |  2.14184  |  2.14160 |   2.14142  |
 |upload time | 4.14365    |   5.961865  |  9.659636   |   17.102032  |   32.155559  |   61.493748 |  120.608905  |
 
+![Issuing Time](./python-test/13-04-2022-trial-1/Figure_1.png)
+
+![Upload Time](./python-test/13-04-2022-trial-1/Figure_2.png)
 problem:
 person countryID is A1234567(8) while actual hkid is A123456(7)
 
