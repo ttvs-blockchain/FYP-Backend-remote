@@ -1,7 +1,7 @@
 package models
 
 type Asset struct {
-	CertID      string `form:"certID" json:"certID" xml:"certID"  binding:"required"`
+	CertID      string `form:"certID" json:"certID" xml:"certID"  binding:""`
 	PersonSysID string `form:"personSysID" json:"personSysID" xml:"personSysID"  binding:"required"`
 	Name        string `form:"name" json:"name" xml:"name"  binding:"required"`
 	Brand       string `form:"brand" json:"brand" xml:"brand"  binding:"required"`

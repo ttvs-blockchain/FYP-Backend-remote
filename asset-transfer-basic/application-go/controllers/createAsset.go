@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func CreateAsset(c *gin.Context) {
@@ -17,6 +18,7 @@ func CreateAsset(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	input.CertDetail.CertID = uuid.New().String()
 	input.CertDetail.Time = input.CertDetail.Time[0:16]
 	fmt.Printf("--> Input check: %s\n", input)
 	asset := input.CertDetail
