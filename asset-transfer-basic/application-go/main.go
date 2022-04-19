@@ -15,6 +15,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/unrolled/secure"
 )
 
 func main() {
@@ -36,11 +37,25 @@ func main() {
 	r.POST("/CreateAsset", controllers.CreateAsset)
 
 	r.POST("/Upload", controllers.Upload)
-
-	// r.GET("/GetPath", controllers.GetPath)
-
-	r.Run(":8080") //
+	r.Use(TlsHandler())
+	r.RunTLS(":8080", "./tlsCert/cert.pem", "./tlsCert/key.pem") //
 
 	log.Printf("============ application-golang ends ============")
 
+}
+func TlsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     "localhost:8080",
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
 }

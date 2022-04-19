@@ -15,6 +15,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/unrolled/secure"
 )
 
 func main() {
@@ -36,6 +37,24 @@ func main() {
 
 	r.POST("/VerifyPath", controllers.VerifyPath)
 
-	r.Run(":8081") // listen and serve on 0.0.0.0:8081 (for windows "localhost:8080")
+	r.Use(TlsHandler())
+	r.RunTLS(":8081", "./tlsCert/cert.pem", "./tlsCert/key.pem") //
 
+}
+
+func TlsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     "localhost:8080",
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
 }

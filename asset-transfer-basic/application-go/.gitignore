@@ -6,3 +6,6 @@ keystore
 .vscode/
 
 config.ini
+
+
+*.pem

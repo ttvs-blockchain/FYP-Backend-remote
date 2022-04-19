@@ -1,6 +1,6 @@
 
 
-time curl -v -X POST "http://localhost:8081/VerifyPath" -H 'content-type: application/json' -d '{
+time curl -v -X POST "https://125.59.138.87:8081/VerifyPath" -k -H 'content-type: application/json' -d '{
     "VerifyInputInfo": {
         "CertDetail": {
             "CertID": "TEST20220206_10",
