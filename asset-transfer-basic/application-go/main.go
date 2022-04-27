@@ -11,11 +11,11 @@ import (
 
 	"asset-transfer-basic/controllers"
 	_ "asset-transfer-basic/controllers"
+	"asset-transfer-basic/middlewares"
 	"asset-transfer-basic/models"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/unrolled/secure"
 )
 
 func main() {
@@ -29,6 +29,7 @@ func main() {
 	log.Printf("============ database connected  ============")
 
 	r := gin.Default()
+	r.Use(middlewares.CORSMiddleware())
 
 	r.GET("/ReadAsset", controllers.ReadAsset)
 
@@ -37,25 +38,9 @@ func main() {
 	r.POST("/CreateAsset", controllers.CreateAsset)
 
 	r.POST("/Upload", controllers.Upload)
-	r.Use(TlsHandler())
 	r.RunTLS(":8080", "./tlsCert/cert.pem", "./tlsCert/key.pem") //
+	r.Use(middlewares.TlsHandler())
 
 	log.Printf("============ application-golang ends ============")
 
-}
-func TlsHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		secureMiddleware := secure.New(secure.Options{
-			SSLRedirect: true,
-			SSLHost:     "localhost:8080",
-		})
-		err := secureMiddleware.Process(c.Writer, c.Request)
-
-		// If there was an error, do not continue.
-		if err != nil {
-			return
-		}
-
-		c.Next()
-	}
 }
