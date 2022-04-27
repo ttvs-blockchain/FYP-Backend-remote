@@ -7,9 +7,9 @@ DIP1
 Final Year Project 2022
 ## File Architecture
 
-The smart contract of  [local chain](/asset-transfer-basic/chaincode-go) and [global chain](/asset-transfer-basic/chaincode-go-global) are developed based on (asset-transfer-basic)[https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-basic] smart contract from fabric-samples of Hyperledger Fabric.
+The smart contract of  [local chain](/asset-transfer-basic/chaincode-go) and [global chain](/asset-transfer-basic/chaincode-go-global) are developed based on [asset-transfer-basic](https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-basic) smart contract from fabric-samples of Hyperledger Fabric.
 
-The [backend for local chain](/asset-transfer-basic/application-go) and [backend for global chain]/(asset-transfer-basic/application-go-global) are based on application from (asset-transfer-basic)[https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-basic].
+The [backend for local chain](/asset-transfer-basic/application-go) and [backend for global chain]/(asset-transfer-basic/application-go-global) are based on application from [asset-transfer-basic](https://github.com/hyperledger/fabric-samples/tree/main/asset-transfer-basic).
 
 The folder of [tlsCert at local](/asset-transfer-basic/application-go/tlsCert/) and [tlsCert at global](/asset-transfer-basic/application-go-global/tlsCert/) stores a self-signed certificates for testing purpose and is gitignored.
 
