@@ -1,0 +1,6 @@
+2022/04/29 11:21:09 ============ application-golang starts ============
+2022/04/29 11:21:09 ============ database connected  ============
+2022/04/29 11:21:09 ============ application-golang ends ============
+2022/04/29 11:23:31 ============ application-golang starts ============
+2022/04/29 11:23:31 ============ database connected  ============
+2022/04/29 11:23:31 ============ application-golang ends ============
