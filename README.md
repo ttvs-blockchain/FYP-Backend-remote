@@ -19,6 +19,18 @@ The backend for the local chain is a backend for the Admin.
 
 To install all executables, please refers to the Hyperledger Fabric Official Website [test network tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html) to install.
 
+dependencies are:
+
+docker-compose  >=1.29
+
+golang          >=1.16.13
+
+config mysql database by setting the config file in applications.
+
+```{bash}
+# cd to current directory
+curl -sSL https://bit.ly/2ysbOFE | bash -s -- -s
+```
 To launch two peers and deploy local chain and global chain on these peers, run the following
 
 ```{bash}
